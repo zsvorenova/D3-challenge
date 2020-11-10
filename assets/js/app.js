@@ -68,8 +68,31 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
     .attr("cy", d => yLinearScale(d.poverty))
     .attr("r", "15")
     .attr("fill", "lightblue")
-    .attr("opacity", ".5");
+    .attr("opacity", ".5")
     
+    // Step 6: Initialize tool tip
+    // ==============================
+    var toolTip = d3.tip()
+      .attr("class", "tooltip")
+      .offset([80, -60])
+      .html(function(d) {
+        return (`${d.state}<br>age: ${d.age}<br>poverty: ${d.poverty}`);
+      });
+
+    // Step 7: Create tooltip in the chart
+    // ==============================
+    chartGroup.call(toolTip);
+
+    // Step 8: Create event listeners to display and hide the tooltip
+    // ==============================
+    circlesGroup.on("click", function(data) {
+        toolTip.show(data, this);
+      })
+        // onmouseout event
+        .on("mouseout", function(data, index) {
+          toolTip.hide(data);
+        });
+  
 
 
 
