@@ -60,32 +60,35 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
 
     // Step 5: Create Circles
     // ==============================
+    var r=15;
     var circlesGroup = chartGroup.selectAll("circle")
     .data(censusData)
     .enter()
     .append("circle")
     .attr("cx", d => xLinearScale(d.age))
     .attr("cy", d => yLinearScale(d.poverty))
-    .attr("r", "15")
+    .attr("r", r)
     .attr("class", "stateCircle")
 
     // adding text to circles
     // http://bl.ocks.org/WilliamQLiu/803b712a4d6efbf7bdb4
-    circlesGroup.select("text")
+    // https://www.dashingd3js.com/svg-text-element
+    // http://bl.ocks.org/ChrisJamesC/4474971
+    var circlesText = circlesGroup.select("text")
         .data(censusData)
         .enter()
         .append("text")
-        .text(d=>d.abbr)
+        .text((d)=>d.abbr)
         .attr("x", d => xLinearScale(d.age))
-        .attr("y", d => yLinearScale(d.poverty)+15/2)
+        .attr("y", d => yLinearScale(d.poverty)+r/2)
         .attr("class", "stateText")
-        // .attr("font-size", "11px")
+        .attr("font-size", r)
         // .attr("fill", "black");
     
     // Step 6: Initialize tool tip
     // ==============================
     var toolTip = d3.tip()
-      .attr("class", "tooltip")
+      .attr("class", "d3-tip")
       .offset([80, -60])
       .html(function(d) {
         return (`${d.state}<br>age: ${d.age}<br>poverty: ${d.poverty}`);
@@ -97,7 +100,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
 
     // Step 8: Create event listeners to display and hide the tooltip
     // ==============================
-    circlesGroup.on("click", function(data) {
+    circlesGroup.on("mouseover", function(data) {
         toolTip.show(data, this);
       })
         // onmouseout event
