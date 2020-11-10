@@ -37,11 +37,11 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
     // Step 2: Create scale functions
     // ==============================
     var xLinearScale = d3.scaleLinear()
-      .domain([20, d3.max(censusData, d => d.age)])
+      .domain([d3.min(censusData, d => d.age)-1, d3.max(censusData, d => d.age)+1])
       .range([0, width]);
 
     var yLinearScale = d3.scaleLinear()
-      .domain([0, d3.max(censusData, d => d.poverty)])
+      .domain([d3.min(censusData, d=>d.poverty)-1, d3.max(censusData, d => d.poverty)+1])
       .range([height, 0]);
 
     // Step 3: Create axis functions
@@ -57,6 +57,18 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
 
     chartGroup.append("g")
       .call(leftAxis);
+
+    // Step 5: Create Circles
+    // ==============================
+    var circlesGroup = chartGroup.selectAll("circle")
+    .data(censusData)
+    .enter()
+    .append("circle")
+    .attr("cx", d => xLinearScale(d.age))
+    .attr("cy", d => yLinearScale(d.poverty))
+    .attr("r", "15")
+    .attr("fill", "lightblue")
+    .attr("opacity", ".5");
     
 
 
