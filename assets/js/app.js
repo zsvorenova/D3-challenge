@@ -6,7 +6,7 @@ var margin = {
   top: 20,
   right: 40,
   bottom: 100,
-  left: 100
+  left: 60
 };
 
 var width = svgWidth - margin.left - margin.right;
@@ -47,7 +47,7 @@ function renderAxes(newXScale, xAxis) {
       .call(bottomAxis);
   
     return xAxis;
-};
+}
 
 // function used for updating circles group with a transition to
 // new circles
@@ -76,7 +76,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
       .attr("class", "d3-tip")
       .offset([80, -60])
       .html(function(d) {
-        return (`${d.state}<br>${label} ${d[chosenXAxis]}`);
+        return (`${d.state}<br>${label} ${d[chosenXAxis]}<br>Healthcare: ${d.healthcare}`);
       });
   
     circlesGroup.call(toolTip);
@@ -124,9 +124,10 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
 
     // Step 4: Append Axes to the chart
     // ==============================
-    chartGroup.append("g")
-      .attr("transform", `translate(0, ${height})`)
-      .call(bottomAxis);
+    var xAxis = chartGroup.append("g")
+        .classed("x-axis", true)
+        .attr("transform", `translate(0, ${height})`)
+        .call(bottomAxis);
 
     chartGroup.append("g")
       .call(leftAxis);
@@ -162,26 +163,26 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
     // ##################################### 
     // Step 6: Initialize tool tip
     // ==============================
-    var toolTip = d3.tip()
-      .attr("class", "d3-tip")
-      .offset([80, -60])
-      .html(function(d) {
-        return (`${d.state}<br>age: ${d.age}<br>poverty: ${d.poverty}`);
-      });
+    // var toolTip = d3.tip()
+    //   .attr("class", "d3-tip")
+    //   .offset([80, -60])
+    //   .html(function(d) {
+    //     return (`${d.state}<br>age: ${d.age}<br>poverty: ${d.poverty}`);
+    //   });
 
-    // Step 7: Create tooltip in the chart
-    // ==============================
-    chartGroup.call(toolTip);
+    // // Step 7: Create tooltip in the chart
+    // // ==============================
+    // chartGroup.call(toolTip);
 
     // Step 8: Create event listeners to display and hide the tooltip
     // ==============================
-    circlesGroup.on("mouseover", function(data) {
-        toolTip.show(data, this);
-      })
-        // onmouseout event
-        .on("mouseout", function(data, index) {
-          toolTip.hide(data);
-        });
+    // circlesGroup.on("mouseover", function(data) {
+    //     toolTip.show(data, this);
+    //   })
+    //     // onmouseout event
+    //     .on("mouseout", function(data, index) {
+    //       toolTip.hide(data);
+    //     });
     // #######################################
     // Create group for two x-axis labels
     var labelsGroup = chartGroup.append("g")
@@ -201,16 +202,64 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
         .classed("inactive", true)
         .text("Age");
 
-    // Create axes labels
-    // yaxis
+    // append yaxis
     chartGroup.append("text")
       .attr("transform", "rotate(-90)")
-      .attr("y", 0 - margin.left + 40)
+      .attr("y", 0 - margin.left)
       .attr("x", 0 - (height / 2))
       .attr("dy", "1em")
-      .attr("class", "axisText")
-      .text("Poverty %");
+      .classed("axis-text", true)
+      .text("Healthcare");
+
+    // updateToolTip function above csv import
+    var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
     
+    // 
+     // x axis labels event listener
+    labelsGroup.selectAll("text")
+        .on("click", function() {
+        // get value of selection
+        var value = d3.select(this).attr("value");
+        if (value !== chosenXAxis) {
+
+        // replaces chosenXAxis with value
+        chosenXAxis = value;
+
+        console.log(chosenXAxis)
+
+        // functions here found above csv import
+        // updates x scale for new data
+        xLinearScale = xScale(censusData, chosenXAxis);
+
+        // updates x axis with transition
+        xAxis = renderAxes(xLinearScale, xAxis);
+        console.log(xAxis);
+
+        // updates circles with new x values
+        circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
+
+        // updates tooltips with new info
+        circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+
+        // changes classes to change bold text
+        if (chosenXAxis === "age") {
+            ageLabel
+            .classed("active", true)
+            .classed("inactive", false);
+            povertyLabel
+            .classed("active", false)
+            .classed("inactive", true);
+        }
+        else {
+            ageLabel
+            .classed("active", false)
+            .classed("inactive", true);
+            povertyLabel
+            .classed("active", true)
+            .classed("inactive", false);
+        }
+        }
+    });
   
 }).catch(function(error) {
     console.log(error);
