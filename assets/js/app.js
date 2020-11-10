@@ -67,8 +67,20 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
     .attr("cx", d => xLinearScale(d.age))
     .attr("cy", d => yLinearScale(d.poverty))
     .attr("r", "15")
-    .attr("fill", "lightblue")
-    .attr("opacity", ".5")
+    .attr("class", "stateCircle")
+
+    // adding text to circles
+    // http://bl.ocks.org/WilliamQLiu/803b712a4d6efbf7bdb4
+    circlesGroup.select("text")
+        .data(censusData)
+        .enter()
+        .append("text")
+        .text(d=>d.abbr)
+        .attr("x", d => xLinearScale(d.age))
+        .attr("y", d => yLinearScale(d.poverty)+15/2)
+        .attr("class", "stateText")
+        // .attr("font-size", "11px")
+        // .attr("fill", "black");
     
     // Step 6: Initialize tool tip
     // ==============================
@@ -108,9 +120,6 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
       .attr("class", "axisText")
       .text("Age");
   
-
-
-
 }).catch(function(error) {
     console.log(error);
 });
