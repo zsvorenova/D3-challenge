@@ -5,7 +5,7 @@ var svgHeight = 500; // window.innerHeight;
 var margin = {
   top: 20,
   right: 40,
-  bottom: 60,
+  bottom: 100,
   left: 100
 };
 
@@ -184,7 +184,23 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
         });
     // #######################################
     // Create group for two x-axis labels
-    
+    var labelsGroup = chartGroup.append("g")
+    .attr("transform", `translate(${width / 2}, ${height + 20})`);
+
+    var povertyLabel = labelsGroup.append("text")
+        .attr("x", 0)
+        .attr("y", 20)
+        .attr("value", "poverty") // value to grab for event listener
+        .classed("active", true)
+        .text("In Poverty %");
+
+    var ageLabel = labelsGroup.append("text")
+        .attr("x", 0)
+        .attr("y", 40)
+        .attr("value", "age") // value to grab for event listener
+        .classed("inactive", true)
+        .text("Age");
+
     // Create axes labels
     // yaxis
     chartGroup.append("text")
@@ -194,11 +210,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
       .attr("dy", "1em")
       .attr("class", "axisText")
       .text("Poverty %");
-    // xaxis
-    chartGroup.append("text")
-      .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
-      .attr("class", "axisText")
-      .text("Age");
+    
   
 }).catch(function(error) {
     console.log(error);
