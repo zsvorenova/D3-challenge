@@ -1,7 +1,6 @@
-// @TODO: YOUR CODE HERE!
 
-var svgWidth = 960;
-var svgHeight = 500;
+var svgWidth = 960;  // window.innerWidth;
+var svgHeight = 500; // window.innerHeight;
 
 var margin = {
   top: 20,
@@ -22,6 +21,80 @@ var svg = d3.select("#scatter")
 var chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+// Initial Params for axis
+var chosenXAxis = "poverty";
+// var chosenYAxis = "healthcare";
+
+// function used for updating x-scale var upon click on axis label
+function xScale(censusData, chosenXAxis) {
+    // create scales
+    var xLinearScale = d3.scaleLinear()
+      .domain([d3.min(censusData, d => d[chosenXAxis]) * 0.8,
+        d3.max(censusData, d => d[chosenXAxis]) * 1.2
+      ])
+      .range([0, width]);
+  
+    return xLinearScale;
+  
+};
+
+// function used for updating xAxis var upon click on axis label
+function renderAxes(newXScale, xAxis) {
+    var bottomAxis = d3.axisBottom(newXScale);
+  
+    xAxis.transition()
+      .duration(1000)
+      .call(bottomAxis);
+  
+    return xAxis;
+};
+
+// function used for updating circles group with a transition to
+// new circles
+function renderCircles(circlesGroup, newXScale, chosenXAxis) {
+
+    circlesGroup.transition()
+      .duration(1000)
+      .attr("cx", d => newXScale(d[chosenXAxis]));
+  
+    return circlesGroup;
+};
+
+// function used for updating circles group with new tooltip
+function updateToolTip(chosenXAxis, circlesGroup) {
+
+    var label;
+  
+    if (chosenXAxis === "poverty") {
+      label = "In Poverty %:";
+    }
+    else {
+      label = "Age:";
+    }
+  
+    var toolTip = d3.tip()
+      .attr("class", "d3-tip")
+      .offset([80, -60])
+      .html(function(d) {
+        return (`${d.state}<br>${label} ${d[chosenXAxis]}`);
+      });
+  
+    circlesGroup.call(toolTip);
+  
+    circlesGroup.on("mouseover", function(data) {
+      toolTip.show(data);
+    })
+      // onmouseout event
+      .on("mouseout", function(data, index) {
+        toolTip.hide(data);
+      });
+  
+    return circlesGroup;
+};
+  
+
+
+// ###########################################
 d3.csv("../assets/data/data.csv").then(function(censusData, err) {
     if (err) throw err;
 
@@ -32,16 +105,16 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
     censusData.forEach(function(data) {
       data.poverty = +data.poverty;
       data.age = +data.age;
+      data.healthcare = +data.healthcare
     });
 
-    // Step 2: Create scale functions
+    // Step 2: Create scales for x and y axis using function defined above
     // ==============================
-    var xLinearScale = d3.scaleLinear()
-      .domain([d3.min(censusData, d => d.age)-1, d3.max(censusData, d => d.age)+1])
-      .range([0, width]);
+    var xLinearScale = xScale(censusData, chosenXAxis)
 
-    var yLinearScale = d3.scaleLinear()
-      .domain([d3.min(censusData, d=>d.poverty)-1, d3.max(censusData, d => d.poverty)+1])
+    // need to be updated for yaxis selection
+    var yLinearScale = d3.scaleLinear() 
+      .domain([d3.min(censusData, d=>d.healthcare), d3.max(censusData, d => d.healthcare)])
       .range([height, 0]);
 
     // Step 3: Create axis functions
@@ -65,8 +138,8 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
     .data(censusData)
     .enter()
     .append("circle")
-    .attr("cx", d => xLinearScale(d.age))
-    .attr("cy", d => yLinearScale(d.poverty))
+    .attr("cx", d => xLinearScale(d[chosenXAxis]))
+    .attr("cy", d => yLinearScale(d.healthcare))
     .attr("r", r)
     .attr("class", "stateCircle")
 
@@ -79,12 +152,14 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
         .enter()
         .append("text")
         .text((d)=>d.abbr)
-        .attr("x", d => xLinearScale(d.age))
-        .attr("y", d => yLinearScale(d.poverty)+r/2)
+        .attr("x", d => xLinearScale(d[chosenXAxis]))
+        .attr("y", d => yLinearScale(d.healthcare))
         .attr("class", "stateText")
         .attr("font-size", r)
         // .attr("fill", "black");
     
+
+    // ##################################### 
     // Step 6: Initialize tool tip
     // ==============================
     var toolTip = d3.tip()
@@ -107,7 +182,9 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
         .on("mouseout", function(data, index) {
           toolTip.hide(data);
         });
-
+    // #######################################
+    // Create group for two x-axis labels
+    
     // Create axes labels
     // yaxis
     chartGroup.append("text")
