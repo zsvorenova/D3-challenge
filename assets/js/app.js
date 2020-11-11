@@ -91,7 +91,13 @@ function updateToolTip(chosenXAxis, circlesGroup) {
   
     return circlesGroup;
 };
-  
+
+function renderCircleText(circlesText, newXScale, chosenXAxis) {
+  circlesText.transition()
+    .duration(1000)
+    .attr("x", d => newXScale(d[chosenXAxis]));
+  return circlesText;
+};
 
 
 // ###########################################
@@ -154,10 +160,9 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
         .append("text")
         .text((d)=>d.abbr)
         .attr("x", d => xLinearScale(d[chosenXAxis]))
-        .attr("y", d => yLinearScale(d.healthcare))
+        .attr("y", d => yLinearScale(d.healthcare)+r/2)
         .attr("class", "stateText")
         .attr("font-size", r)
-        // .attr("fill", "black");
     
 
     // ##################################### 
@@ -237,6 +242,9 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
 
         // updates circles with new x values
         circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
+
+        // update circles text with new x values
+        circlesText = renderCircleText(circlesText, xLinearScale, chosenXAxis);
 
         // updates tooltips with new info
         circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
