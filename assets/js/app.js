@@ -30,8 +30,8 @@ var r=15;
 function xScale(censusData, chosenXAxis) {
     // create scales
     var xLinearScale = d3.scaleLinear()
-      .domain([d3.min(censusData, d => d[chosenXAxis]) * 0.8,
-        d3.max(censusData, d => d[chosenXAxis]) * 1.2
+      .domain([d3.min(censusData, d => d[chosenXAxis]) *0.95,
+        d3.max(censusData, d => d[chosenXAxis]) * 1
       ])
       .range([0, width]);
   
@@ -43,8 +43,8 @@ function xScale(censusData, chosenXAxis) {
 function yScale(censusData, chosenYAxis) {
   // create scales
   var yLinearScale = d3.scaleLinear()
-    .domain([d3.min(censusData, d => d[chosenYAxis]),
-      d3.max(censusData, d => d[chosenYAxis])
+    .domain([d3.min(censusData, d => d[chosenYAxis])*0.8,
+      d3.max(censusData, d => d[chosenYAxis]) *1.05
   ])
     .range([height, 0]);
 
@@ -120,13 +120,9 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
   
     circlesGroup.call(toolTip);
   
-    circlesGroup.on("mouseover", function(data) {
-      toolTip.show(data);
-    })
+    circlesGroup.on("mouseover", toolTip.show)
       // onmouseout event
-      .on("mouseout", function(data, index) {
-        toolTip.hide(data);
-      });
+      .on("mouseout", toolTip.hide);
   
     return circlesGroup;
 };
