@@ -50,7 +50,7 @@ function yScale(censusData, chosenYAxis) {
   return yLinearScale;
 };
 
-// !!!! function used for updating xAxis var upon click on axis label!!!
+// function used for updating xAxis var upon click on axis label
 function renderAxes(newXScale, xAxis) {
     var bottomAxis = d3.axisBottom(newXScale);
   
@@ -74,11 +74,12 @@ function renderYAxes(newYScale, yAxis) {
 
 // !!! function used for updating circles group with a transition to
 // new circles
-function renderCircles(circlesGroup, newXScale, chosenXAxis) {
+function renderCircles(circlesGroup, newXScale, chosenXAxis, newYScale, chosenYAxis) {
 
     circlesGroup.transition()
       .duration(1000)
-      .attr("cx", d => newXScale(d[chosenXAxis]));
+      .attr("cx", d => newXScale(d[chosenXAxis]))
+      .attr("cy", d => newYScale(d[chosenYAxis]));
   
     return circlesGroup;
 };
@@ -262,7 +263,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
         console.log(xAxis);
 
         // updates circles with new x values
-        circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
+        circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
 
         // update circles text with new x values
         circlesText = renderCircleText(circlesText, xLinearScale, chosenXAxis);
@@ -311,7 +312,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
         console.log(yAxis);
 
         // updates circles with new x values
-        circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
+        circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
 
         // update circles text with new x values
         circlesText = renderCircleText(circlesText, xLinearScale, chosenXAxis);
