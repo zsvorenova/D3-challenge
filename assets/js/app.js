@@ -24,6 +24,7 @@ var chartGroup = svg.append("g")
 // Initial Params for axis
 var chosenXAxis = "poverty";
 var chosenYAxis = "healthcare";
+var r=15;
 
 // function used for updating x-scale var upon click on axis label
 function xScale(censusData, chosenXAxis) {
@@ -125,10 +126,12 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
 };
 
 // !!!! function to update text in the circles 
-function renderCircleText(circlesText, newXScale, chosenXAxis) {
+function renderCircleText(circlesText, newXScale, chosenXAxis, newYScale, chosenYAxis) {
   circlesText.transition()
     .duration(1000)
-    .attr("x", d => newXScale(d[chosenXAxis]));
+    .attr("x", d => newXScale(d[chosenXAxis]))
+    .attr("y", d => newYScale(d[chosenYAxis])+r/2);
+
   return circlesText;
 };
 
@@ -173,7 +176,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
 
     // Step 5: Create Circles
     // ==============================
-    var r=15;
+   
     var circlesGroup = chartGroup.selectAll("circle")
     .data(censusData)
     .enter()
@@ -266,7 +269,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
         circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
 
         // update circles text with new x values
-        circlesText = renderCircleText(circlesText, xLinearScale, chosenXAxis);
+        circlesText = renderCircleText(circlesText, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
 
         // updates tooltips with new info
         circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
@@ -315,7 +318,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
         circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
 
         // update circles text with new x values
-        circlesText = renderCircleText(circlesText, xLinearScale, chosenXAxis);
+        circlesText = renderCircleText(circlesText, xLinearScale, chosenXAxis, yLinearScale, chosenYAxis);
 
         // updates tooltips with new info
         circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
