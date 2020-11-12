@@ -50,7 +50,7 @@ function yScale(censusData, chosenYAxis) {
   return yLinearScale;
 };
 
-// !!! function used for updating xAxis var upon click on axis label!!!
+// !!!! function used for updating xAxis var upon click on axis label!!!
 function renderAxes(newXScale, xAxis) {
     var bottomAxis = d3.axisBottom(newXScale);
   
@@ -59,9 +59,9 @@ function renderAxes(newXScale, xAxis) {
       .call(bottomAxis);
   
     return xAxis;
-}
+};
 
-// function used for updating circles group with a transition to
+// !!! function used for updating circles group with a transition to
 // new circles
 function renderCircles(circlesGroup, newXScale, chosenXAxis) {
 
@@ -89,7 +89,7 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
       labelY = "Healthcare:";
     }
     else {
-      labelY = "DOPLN TEXT";
+      labelY = "Smokes (%):";
     };
   
     var toolTip = d3.tip()
@@ -112,6 +112,7 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
     return circlesGroup;
 };
 
+// !!!! function to update text in the circles 
 function renderCircleText(circlesText, newXScale, chosenXAxis) {
   circlesText.transition()
     .duration(1000)
@@ -131,7 +132,8 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
     censusData.forEach(function(data) {
       data.poverty = +data.poverty;
       data.age = +data.age;
-      data.healthcare = +data.healthcare
+      data.healthcare = +data.healthcare;
+      data.smokes = +data.smokes;
     });
 
     // Step 2: Create scales for x and y axis using function defined above
@@ -164,7 +166,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
     .enter()
     .append("circle")
     .attr("cx", d => xLinearScale(d[chosenXAxis]))
-    .attr("cy", d => yLinearScale(d.healthcare))
+    .attr("cy", d => yLinearScale(d[chosenYAxis]))
     .attr("r", r)
     .attr("class", "stateCircle")
 
@@ -178,7 +180,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
         .append("text")
         .text((d)=>d.abbr)
         .attr("x", d => xLinearScale(d[chosenXAxis]))
-        .attr("y", d => yLinearScale(d.healthcare)+r/2)
+        .attr("y", d => yLinearScale(d[chosenYAxis])+r/2)
         .attr("class", "stateText")
         .attr("font-size", r)
     
@@ -206,7 +208,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
       .attr("y", 0 - margin.left)
       .attr("x", 0 - (height / 2))
       .attr("dy", "1em")
-      .classed("axis-text", true)
+      .classed("aText", true)
       .text("Healthcare");
 
     // updateToolTip function above csv import
