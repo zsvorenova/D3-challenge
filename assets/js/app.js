@@ -1,6 +1,15 @@
+function makeResponsive() {
+// if the SVG area isn't empty when the browser loads,
+// remove it and replace it with a resized version of the chart/svg
+var svgArea = d3.select("body").select("svg");
 
-var svgWidth = 960;  // window.innerWidth;
-var svgHeight = 500; // window.innerHeight;
+// when we resize it removes svg and then recreate it - IMPORTANT!! NEW!!
+if (!svgArea.empty()) {
+   svgArea.remove();
+};
+// the width of the chart will be defined by the width of the parent div for scatter plot
+var svgWidth = parseInt(d3.select(".col-md-9").style("width"));
+var svgHeight = 500;
 
 var margin = {
   top: 20,
@@ -401,4 +410,13 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
 }).catch(function(error) {
     console.log(error);
 });
-    
+};
+
+makeResponsive();
+
+// Event listener for window resize.
+// When the browser window is resized, makeResponsive() is called.
+// THIS IS EVENT LISTENER, needs to be last step!!!
+// "resize" is on of defined event
+
+d3.select(window).on("resize", makeResponsive);
