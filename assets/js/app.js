@@ -14,6 +14,7 @@ var height = svgHeight - margin.top - margin.bottom;
 
 // Create an SVG wrapper, append an SVG group that will hold our chart, and shift the latter by left and top margins.
 var svg = d3.select("#scatter")
+  .classed("chart", true) // maybe?
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
@@ -73,8 +74,7 @@ function renderYAxes(newYScale, yAxis) {
     return yAxis;
 }
 
-// !!! function used for updating circles group with a transition to
-// new circles
+// function used for updating circles group with a transition to new circles
 function renderCircles(circlesGroup, newXScale, chosenXAxis, newYScale, chosenYAxis) {
 
     circlesGroup.transition()
@@ -127,7 +127,7 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
     return circlesGroup;
 };
 
-// !!!! function to update text in the circles 
+// function to update text in the circles 
 function renderCircleText(circlesText, newXScale, chosenXAxis, newYScale, chosenYAxis) {
   circlesText.transition()
     .duration(1000)
@@ -212,6 +212,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
         .attr("x", 0)
         .attr("y", 20)
         .attr("value", "poverty") // value to grab for event listener
+        .classed("aText", true)
         .classed("active", true)
         .text("In Poverty %");
 
@@ -219,6 +220,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
         .attr("x", 0)
         .attr("y", 40)
         .attr("value", "age") // value to grab for event listener
+        .classed("aText", true)
         .classed("inactive", true)
         .text("Age");
     
@@ -226,6 +228,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
         .attr("x", 0)
         .attr("y", 60)
         .attr("value", "income") // value to grab for event listener
+        .classed("aText", true)
         .classed("inactive", true)
         .text("Median Income");
 
@@ -238,9 +241,9 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
       .attr("y", 0 - margin.left)
       .attr("x", 0 - (height / 2))
       .attr("value", "healthcare")
-      .classed("active", true)
       .attr("dy", "1em")
       .classed("aText", true)
+      .classed("active", true)
       .text("Healthcare");
     
     var smokeLabel = labelsYGroup.append("text")
@@ -249,6 +252,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
       .attr("value", "smokes")
       .attr("dy", "1em")
       .classed("aText", true)
+      .classed("inactive", true)
       .text("Smokes (%)");
 
     var obesityLabel = labelsYGroup.append("text")
@@ -257,6 +261,7 @@ d3.csv("../assets/data/data.csv").then(function(censusData, err) {
       .attr("value", "obesity")
       .attr("dy", "1em")
       .classed("aText", true)
+      .classed("inactive", true)
       .text("Obese (%)");
 
     // updateToolTip function above csv import
